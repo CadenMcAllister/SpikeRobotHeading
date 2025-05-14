@@ -18,7 +18,8 @@ A simple browser-based compass that uses your device’s gyroscope to track and 
 
 ## 📸 Preview
 
-![screenshot-placeholder](https://via.placeholder.com/600x300?text=App+Screenshot)
+![image](https://github.com/user-attachments/assets/50f7e919-d97c-49e2-bcec-cf8788eace52)
+
 
 ---
 
