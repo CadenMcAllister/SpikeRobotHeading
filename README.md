@@ -1,7 +1,3 @@
-Absolutely — here’s the updated `README.md` with a section mentioning that this was built for use with Spike Prime:
-
----
-
 # 📐 Gyro Heading Tracker
 
 A simple browser-based compass that uses your device’s gyroscope to track and display your current heading. Built with React and Framer Motion.
@@ -88,7 +84,3 @@ This project is deployed using [Vercel](https://vercel.com). Any commit to the `
 ## 📄 License
 
 MIT License. Do whatever you want, just don’t claim it’s yours.
-
----
-
-Let me know if you'd like to also add your name or school somewhere!
