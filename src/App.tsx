@@ -23,7 +23,8 @@ export default function App() {
         offsetRef.current = e.alpha;
       }
       rawAlphaRef.current = e.alpha;
-        const yaw = (-e.alpha + offsetRef.current + 180) % 360 - 180;
+      let rawYaw = (e.alpha + offsetRef.current) % 360;
+      let yaw = rawYaw > 180 ? rawYaw - 360 : rawYaw;
         setHeading(yaw);
       }
     };
