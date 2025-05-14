@@ -52,26 +52,30 @@ export default function App() {
       <div className="relative w-40 h-40">
         <motion.div
           className="w-40 h-40 border-4 border-blue-500 rounded-full flex items-center justify-center text-2xl font-bold"
-          animate={{ rotate: -heading }}
+          animate={{rotate: -heading }}
           transition={{ type: "spring", stiffness: 120, damping: 10 }}
         >
           {Math.round(heading)}°
         </motion.div>
 
-        {/* Ray pointer from center to edge */}
+        {/* Ray pointer */}
         <motion.div
-          className="absolute bg-white"
+          className="absolute w-1 h-24 bg-white top-0 left-0 origin-top"
           style={{
+<<<<<<< HEAD
             width: "2px", // Narrow width for the ray
             height: "100%", // Full height of the circle to reach the edge
             transformOrigin: "center center", // Make sure it rotates from the center
             top: 0,
             left: "50%",
             transform: `rotate(${heading}deg) translateX(-50%)`,
+=======
+            transform: `rotate(${heading}deg)`,
+            transformOrigin: "center center", // Ensures the ray rotates from the center of the circle
+>>>>>>> parent of 0406957 (Update App.tsx)
           }}
         ></motion.div>
 
-        {/* Saved ticks */}
         {snapshots.map((snap, i) => {
           const angle = (snap * Math.PI) / 180;
           const radius = 80;
