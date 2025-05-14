@@ -1,57 +1,94 @@
-# React + TypeScript + Vite
+Absolutely — here’s the updated `README.md` with a section mentioning that this was built for use with Spike Prime:
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+---
 
-Here is the deployed vercel link to the project:
-https://spike-robot-heading.vercel.app/
+# 📐 Gyro Heading Tracker
 
-Currently, two official plugins are available:
+A simple browser-based compass that uses your device’s gyroscope to track and display your current heading. Built with React and Framer Motion.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+> 🧠 **Originally built for use with LEGO Spike Prime** to assist in directional calibration during robotics development.
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## 🚀 Features
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+* Real-time heading display (yaw)
+* Reset heading to make current direction "0°"
+* Save, restore, rename, and delete resets
+* Undo reset history
+* Visual rotation indicator with smooth animation
+
+---
+
+## 📸 Preview
+
+![screenshot-placeholder](https://via.placeholder.com/600x300?text=App+Screenshot)
+
+---
+
+## 🛠️ Getting Started
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/YOUR_USERNAME/gyro-heading-tracker.git
+cd gyro-heading-tracker
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### 2. Install dependencies
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+```bash
+npm install
 ```
+
+### 3. Start the development server
+
+```bash
+npm run dev
+```
+
+Then open your browser to [http://localhost:5173](http://localhost:5173)
+
+---
+
+## 🧭 How to Use
+
+* Rotate your phone/device to see the heading update.
+* Tap **Reset Yaw** to make your current direction the new 0°.
+* Tap **Save Heading** to store a reset point you may want to return to.
+* Tap on any saved heading to restore that heading offset.
+* Use the ✏️ icon to rename saved headings, and 🗑️ to delete them.
+* Tap **Undo Reset** to revert to the previous heading reset.
+
+> Best used on mobile devices that support gyroscope input.
+
+---
+
+## 🤖 Why This Exists
+
+This tool was built to assist in calibrating turning directions for a LEGO Spike Prime robot as part of a robotics showcase. The app allows for quick resets and heading snapshots to help with alignment and consistency during testing on real surfaces.
+
+---
+
+## 🌐 Deployment
+
+This project is deployed using [Vercel](https://vercel.com). Any commit to the `main` branch is automatically deployed.
+
+---
+
+## 📦 Built With
+
+* [React](https://reactjs.org/)
+* [Framer Motion](https://www.framer.com/motion/)
+* [Vite](https://vitejs.dev/)
+* [Tailwind CSS](https://tailwindcss.com/)
+
+---
+
+## 📄 License
+
+MIT License. Do whatever you want, just don’t claim it’s yours.
+
+---
+
+Let me know if you'd like to also add your name or school somewhere!
