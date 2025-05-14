@@ -1,20 +1,30 @@
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
+import { Pencil, Trash2 } from "lucide-react";
 import './App.css';
 import './index.css';
+
+type ResetEntry = {
+  offset: number;
+  name: string;
+  color: string;
+};
 
 export default function App() {
   const [heading, setHeading] = useState<number>(0);
   const offsetRef = useRef<number>(0);
   const rawAlphaRef = useRef<number>(0);
-  const [snapshots, setSnapshots] = useState<number[]>([]);
+  const [resets, setResets] = useState<ResetEntry[]>([]);
 
   useEffect(() => {
     const handleOrientation = (e: DeviceOrientationEvent) => {
       if (e.alpha != null) {
-        rawAlphaRef.current = e.alpha;
-        // Flip yaw to make right positive and left negative
-        let yaw = (-e.alpha + offsetRef.current + 180) % 360 - 180;
+      if (offsetRef.current === 0 && rawAlphaRef.current === 0) {
+        offsetRef.current = e.alpha;
+      }
+      rawAlphaRef.current = e.alpha;
+      const raw = -e.alpha + offsetRef.current;
+      const yaw = ((raw + 180 + 360) % 360) - 180;
         setHeading(yaw);
       }
     };
@@ -23,30 +33,49 @@ export default function App() {
     return () => window.removeEventListener("deviceorientation", handleOrientation);
   }, []);
 
+  const pastelColor = () => {
+    const hue = Math.floor(Math.random() * 360);
+    return `hsl(${hue}, 70%, 80%)`;
+  };
+
   const resetYaw = () => {
-    offsetRef.current = rawAlphaRef.current;
+    const newOffset = rawAlphaRef.current;
+    const newReset: ResetEntry = {
+      offset: newOffset,
+      name: `Reset ${resets.length + 1}`,
+      color: pastelColor()
+    };
+    setResets((prev) => [...prev, newReset]);
+    offsetRef.current = newOffset;
     setHeading(0);
   };
 
-  const saveHeading = () => {
-    setSnapshots((prev) => [...prev, heading]);
-  };
-
-  const restoreHeading = (value: number) => {
-    offsetRef.current = (-value + rawAlphaRef.current + 360) % 360;
+  const restoreReset = (entry: ResetEntry) => {
+    offsetRef.current = entry.offset;
     setHeading(0);
   };
 
-  const clearHeadings = () => {
-    setSnapshots([]);
+  const renameReset = (index: number) => {
+    const newName = prompt("Rename this reset?", resets[index].name);
+    if (newName) {
+      setResets((prev) =>
+        prev.map((r, i) => (i === index ? { ...r, name: newName } : r))
+      );
+    }
+  };
+
+  const deleteReset = (index: number) => {
+    setResets((prev) => prev.filter((_, i) => i !== index));
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-900 text-white">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-900 text-white px-4">
+      {/* Heading display */}
       <div className="absolute top-8 text-4xl font-bold">
         {Math.round(heading)}°
       </div>
 
+      {/* Rotating dial */}
       <motion.div
         className="w-40 h-40 border-4 border-blue-500 rounded-full flex items-center justify-center relative"
         animate={{ rotate: heading }}
@@ -55,6 +84,7 @@ export default function App() {
         <div className="w-0 h-20 border-l-4 border-white absolute top-0"></div>
       </motion.div>
 
+      {/* Buttons */}
       <div className="mt-6 flex gap-4 flex-wrap justify-center">
         <button
           onClick={resetYaw}
@@ -63,31 +93,39 @@ export default function App() {
           Reset Yaw
         </button>
         <button
-          onClick={saveHeading}
-          className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700"
-        >
-          Save Heading
-        </button>
-        <button
-          onClick={clearHeadings}
+          onClick={() => setResets([])}
           className="px-4 py-2 rounded bg-red-500 text-white hover:bg-red-600"
         >
-          Clear Saved Headings
+          Clear Resets
         </button>
       </div>
 
-      {snapshots.length > 0 && (
+      {/* Reset history */}
+      {resets.length > 0 && (
         <div className="mt-6 w-full max-w-sm">
-          <h2 className="mb-2 text-lg font-semibold">Saved Headings</h2>
+          <h2 className="mb-2 text-lg font-semibold">Yaw Reset History</h2>
           <div className="grid gap-2">
-            {snapshots.map((snap, i) => (
-              <button
+            {resets.map((r, i) => (
+              <div
                 key={i}
-                onClick={() => restoreHeading(snap)}
-                className="w-full px-3 py-2 rounded bg-gray-700 text-white hover:bg-gray-600"
+                className="flex items-center justify-between px-3 py-2 rounded text-black"
+                style={{ backgroundColor: r.color }}
               >
-                {snap.toFixed(1)}°
-              </button>
+                <button
+                  onClick={() => restoreReset(r)}
+                  className="text-left flex-1"
+                >
+                  {r.name}
+                </button>
+                <div className="flex gap-2 ml-2">
+                  <button onClick={() => renameReset(i)}>
+                    <Pencil size={18} />
+                  </button>
+                  <button onClick={() => deleteReset(i)}>
+                    <Trash2 size={18} />
+                  </button>
+                </div>
+              </div>
             ))}
           </div>
         </div>
