@@ -6,13 +6,13 @@ import './index.css';
 export default function App() {
   const [heading, setHeading] = useState<number>(0);
   const offsetRef = useRef<number>(0);
-  const rawAlphaRef = useRef<number>(0); // Added to track raw alpha
+  const rawAlphaRef = useRef<number>(0); // Track raw alpha for reset
   const [snapshots, setSnapshots] = useState<number[]>([]);
 
   useEffect(() => {
     const handleOrientation = (e: DeviceOrientationEvent) => {
       if (e.alpha != null) {
-        rawAlphaRef.current = e.alpha; // Update raw alpha with device yaw
+        rawAlphaRef.current = e.alpha;
         let yaw = (e.alpha + offsetRef.current) % 360;
         if (yaw > 180) yaw -= 360;
         if (yaw < -180) yaw += 360;
@@ -25,9 +25,8 @@ export default function App() {
   }, []);
 
   const resetYaw = () => {
-    // Directly set offset based on raw alpha
     offsetRef.current = (360 - rawAlphaRef.current) % 360;
-    setHeading(0); // Reset heading to 0
+    setHeading(0);
   };
 
   const saveHeading = () => {
@@ -41,12 +40,19 @@ export default function App() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-900 text-white">
+      {/* Degrees text at the top */}
+      <div className="absolute top-8 text-4xl font-bold">
+        {Math.round(heading)}°
+      </div>
+
+      {/* Rotating circle */}
       <motion.div
-        className="w-40 h-40 border-4 border-blue-500 rounded-full flex items-center justify-center text-2xl font-bold"
-        animate={{ rotate: -heading }}
+        className="w-40 h-40 border-4 border-blue-500 rounded-full flex items-center justify-center"
+        animate={{ rotate: heading }}
         transition={{ type: "spring", stiffness: 120, damping: 10 }}
       >
-        {Math.round(heading)}°
+        {/* Rotating line */}
+        <div className="w-0 h-20 border-l-4 border-white absolute top-0"></div>
       </motion.div>
 
       <div className="mt-6 flex gap-4">
