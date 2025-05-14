@@ -42,7 +42,7 @@ export default function App() {
         animate={{ rotate: heading }}
         transition={{ type: "spring", stiffness: 120, damping: 10 }}
       >
-        {heading.toFixed(1)}°
+        {Math.round(heading)}°
       </motion.div>
 
       <div className="mt-6 flex gap-4">
@@ -70,7 +70,7 @@ export default function App() {
                 onClick={() => restoreHeading(snap)}
                 className="w-full px-3 py-2 rounded bg-gray-700 text-white hover:bg-gray-600"
               >
-                {snap.toFixed(1)}°
+                {Math.round(snap)}°
               </button>
             ))}
           </div>
