@@ -4,89 +4,50 @@ import './App.css';
 import './index.css';
 
 export default function App() {
-  const tickColors = [
-    "bg-red-500",
-    "bg-orange-500",
-    "bg-yellow-400",
-    "bg-green-500",
-    "bg-blue-500",
-    "bg-indigo-500",
-    "bg-purple-500",
-  ];
-
-  const rawAlphaRef = useRef<number>(0);
   const [heading, setHeading] = useState<number>(0);
   const offsetRef = useRef<number>(0);
+  const rawAlphaRef = useRef<number>(0); // Added to track raw alpha
   const [snapshots, setSnapshots] = useState<number[]>([]);
 
   useEffect(() => {
     const handleOrientation = (e: DeviceOrientationEvent) => {
       if (e.alpha != null) {
-        rawAlphaRef.current = e.alpha;
+        rawAlphaRef.current = e.alpha; // Update raw alpha with device yaw
         let yaw = (e.alpha + offsetRef.current) % 360;
         if (yaw > 180) yaw -= 360;
         if (yaw < -180) yaw += 360;
         setHeading(yaw);
       }
     };
+
     window.addEventListener("deviceorientation", handleOrientation);
     return () => window.removeEventListener("deviceorientation", handleOrientation);
   }, []);
 
   const resetYaw = () => {
+    // Directly set offset based on raw alpha
     offsetRef.current = (360 - rawAlphaRef.current) % 360;
-    setHeading(0);
+    setHeading(0); // Reset heading to 0
   };
 
   const saveHeading = () => {
     setSnapshots((prev) => [...prev, heading]);
   };
 
-  const setTickAsZero = (tick: number) => {
-    offsetRef.current = (360 - (rawAlphaRef.current - tick)) % 360;
+  const restoreHeading = (value: number) => {
+    offsetRef.current = (360 - value) % 360;
     setHeading(0);
   };
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-900 text-white">
-      <div className="relative w-40 h-40">
-        <motion.div
-          className="w-40 h-40 border-4 border-blue-500 rounded-full flex items-center justify-center text-2xl font-bold"
-          animate={{rotate: -heading }}
-          transition={{ type: "spring", stiffness: 120, damping: 10 }}
-        >
-          {Math.round(heading)}°
-        </motion.div>
-
-        {/* Ray pointer */}
-        <motion.div
-          className="absolute w-1 h-24 bg-white top-0 left-0 origin-top"
-          style={{
-            transform: `rotate(${heading}deg)`,
-            transformOrigin: "center center", // Ensures the ray rotates from the center of the circle
-          }}
-        ></motion.div>
-
-        {snapshots.map((snap, i) => {
-          const angle = (snap * Math.PI) / 180;
-          const radius = 80;
-          const x = radius * Math.cos(angle);
-          const y = radius * Math.sin(angle);
-
-          return (
-            <div
-              key={i}
-              onClick={() => setTickAsZero(snap)}
-              className={`absolute w-3 h-3 rounded-full cursor-pointer ${tickColors[i % tickColors.length]}`}
-              style={{
-                left: `calc(50% + ${x}px - 0.375rem)`,
-                top: `calc(50% - ${y}px - 0.375rem)`,
-              }}
-              title={`Ref: ${Math.round(snap)}°`}
-            />
-          );
-        })}
-      </div>
+      <motion.div
+        className="w-40 h-40 border-4 border-blue-500 rounded-full flex items-center justify-center text-2xl font-bold"
+        animate={{ rotate: heading }}
+        transition={{ type: "spring", stiffness: 120, damping: 10 }}
+      >
+        {Math.round(heading)}°
+      </motion.div>
 
       <div className="mt-6 flex gap-4">
         <button
@@ -102,6 +63,23 @@ export default function App() {
           Save Heading
         </button>
       </div>
+
+      {snapshots.length > 0 && (
+        <div className="mt-6 w-full max-w-sm">
+          <h2 className="mb-2 text-lg font-semibold">Saved Headings</h2>
+          <div className="grid gap-2">
+            {snapshots.map((snap, i) => (
+              <button
+                key={i}
+                onClick={() => restoreHeading(snap)}
+                className="w-full px-3 py-2 rounded bg-gray-700 text-white hover:bg-gray-600"
+              >
+                {snap.toFixed(1)}°
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
