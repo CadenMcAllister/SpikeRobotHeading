@@ -5,16 +5,16 @@ import './index.css';
 
 export default function App() {
   const [heading, setHeading] = useState<number>(0);
-  const offsetRef = useRef<number>(0); // Used to adjust for device rotation
-  const rawAlphaRef = useRef<number>(0); // Track raw alpha for reset
+  const offsetRef = useRef<number>(0);
+  const rawAlphaRef = useRef<number>(0);
   const [snapshots, setSnapshots] = useState<number[]>([]);
 
   useEffect(() => {
     const handleOrientation = (e: DeviceOrientationEvent) => {
       if (e.alpha != null) {
         rawAlphaRef.current = e.alpha;
-        // Adjust yaw to be positive when to the right and negative when to the left
-        let yaw = (e.alpha + offsetRef.current + 180) % 360 - 180; // Ensure yaw is between -180 and 180
+        // Flip yaw to make right positive and left negative
+        let yaw = (-e.alpha + offsetRef.current + 180) % 360 - 180;
         setHeading(yaw);
       }
     };
@@ -24,7 +24,7 @@ export default function App() {
   }, []);
 
   const resetYaw = () => {
-    offsetRef.current = (360 - rawAlphaRef.current) % 360;
+    offsetRef.current = rawAlphaRef.current;
     setHeading(0);
   };
 
@@ -33,32 +33,29 @@ export default function App() {
   };
 
   const restoreHeading = (value: number) => {
-    offsetRef.current = (360 - value) % 360;
+    offsetRef.current = (-value + rawAlphaRef.current + 360) % 360;
     setHeading(0);
   };
 
   const clearHeadings = () => {
-    setSnapshots([]); // Clear the saved headings
+    setSnapshots([]);
   };
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-900 text-white">
-      {/* Degrees text at the top */}
       <div className="absolute top-8 text-4xl font-bold">
         {Math.round(heading)}°
       </div>
 
-      {/* Rotating circle */}
       <motion.div
-        className="w-40 h-40 border-4 border-blue-500 rounded-full flex items-center justify-center"
-        animate={{ rotate: -heading }}
+        className="w-40 h-40 border-4 border-blue-500 rounded-full flex items-center justify-center relative"
+        animate={{ rotate: heading }}
         transition={{ type: "spring", stiffness: 120, damping: 10 }}
       >
-        {/* Rotating line */}
         <div className="w-0 h-20 border-l-4 border-white absolute top-0"></div>
       </motion.div>
 
-      <div className="mt-6 flex gap-4">
+      <div className="mt-6 flex gap-4 flex-wrap justify-center">
         <button
           onClick={resetYaw}
           className="px-4 py-2 rounded bg-green-500 text-white hover:bg-green-600"
