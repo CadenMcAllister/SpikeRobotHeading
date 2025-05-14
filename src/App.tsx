@@ -64,7 +64,6 @@ export default function App() {
           style={{
             width: "2px", // Narrow width for the ray
             height: "100%", // Full height of the circle to reach the edge
-            transform: `rotate(${heading}deg)`, // Rotate based on heading
             transformOrigin: "center center", // Make sure it rotates from the center
             top: 0,
             left: "50%",
