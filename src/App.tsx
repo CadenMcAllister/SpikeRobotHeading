@@ -19,7 +19,10 @@ export default function App() {
   useEffect(() => {
     const handleOrientation = (e: DeviceOrientationEvent) => {
       if (e.alpha != null) {
-        rawAlphaRef.current = e.alpha;
+      if (offsetRef.current === 0 && rawAlphaRef.current === 0) {
+        offsetRef.current = e.alpha;
+      }
+      rawAlphaRef.current = e.alpha;
         const yaw = (-e.alpha + offsetRef.current + 180) % 360 - 180;
         setHeading(yaw);
       }
