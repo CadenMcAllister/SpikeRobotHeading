@@ -51,7 +51,7 @@ export default function App() {
       {/* Rotating circle */}
       <motion.div
         className="w-40 h-40 border-4 border-blue-500 rounded-full flex items-center justify-center"
-        animate={{ rotate: heading }}
+        animate={{ rotate: -heading }}
         transition={{ type: "spring", stiffness: 120, damping: 10 }}
       >
         {/* Rotating line */}
