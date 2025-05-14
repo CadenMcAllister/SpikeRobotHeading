@@ -3,17 +3,23 @@ import { motion } from "framer-motion";
 import './App.css';
 import './index.css';
 
+type HeadingSnapshot = {
+  value: number;
+  name: string;
+  color: string;
+};
+
 export default function App() {
   const [heading, setHeading] = useState<number>(0);
   const offsetRef = useRef<number>(0);
   const rawAlphaRef = useRef<number>(0);
-  const [snapshots, setSnapshots] = useState<number[]>([]);
-  console.log("App rendered");
+  const [snapshots, setSnapshots] = useState<HeadingSnapshot[]>([]);
+  const [offsetHistory, setOffsetHistory] = useState<number[]>([]); // For undo
+
   useEffect(() => {
     const handleOrientation = (e: DeviceOrientationEvent) => {
       if (e.alpha != null) {
         rawAlphaRef.current = e.alpha;
-        // Flip yaw to make right positive and left negative
         let yaw = (-e.alpha + offsetRef.current + 180) % 360 - 180;
         setHeading(yaw);
       }
@@ -23,17 +29,39 @@ export default function App() {
     return () => window.removeEventListener("deviceorientation", handleOrientation);
   }, []);
 
+  const pastelColor = () => {
+    const hue = Math.floor(Math.random() * 360);
+    return `hsl(${hue}, 70%, 80%)`;
+  };
+
   const resetYaw = () => {
+    setOffsetHistory((prev) => [...prev, offsetRef.current]); // Save current offset
     offsetRef.current = rawAlphaRef.current;
     setHeading(0);
   };
 
-  const saveHeading = () => {
-    setSnapshots((prev) => [...prev, heading]);
+  const undoReset = () => {
+    setOffsetHistory((prev) => {
+      if (prev.length === 0) return prev;
+      const last = prev[prev.length - 1];
+      offsetRef.current = last;
+      return prev.slice(0, -1);
+    });
   };
 
-  const restoreHeading = (value: number) => {
-    offsetRef.current = (-value + rawAlphaRef.current + 360) % 360;
+  const saveHeading = () => {
+    const name = prompt("Name this heading?") ?? `Heading ${snapshots.length + 1}`;
+    const color = pastelColor();
+    const newSnap: HeadingSnapshot = {
+      value: heading,
+      name,
+      color,
+    };
+    setSnapshots((prev) => [...prev, newSnap]);
+  };
+
+  const restoreHeading = (snap: HeadingSnapshot) => {
+    offsetRef.current = (-snap.value + rawAlphaRef.current + 360) % 360;
     setHeading(0);
   };
 
@@ -42,7 +70,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-900 text-white">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-900 text-white px-4">
       <div className="absolute top-8 text-4xl font-bold">
         {Math.round(heading)}°
       </div>
@@ -63,6 +91,13 @@ export default function App() {
           Reset Yaw
         </button>
         <button
+          onClick={undoReset}
+          disabled={offsetHistory.length === 0}
+          className={`px-4 py-2 rounded ${offsetHistory.length === 0 ? 'bg-gray-500 cursor-not-allowed' : 'bg-yellow-500 hover:bg-yellow-600'} text-white`}
+        >
+          Undo Reset
+        </button>
+        <button
           onClick={saveHeading}
           className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700"
         >
@@ -72,7 +107,7 @@ export default function App() {
           onClick={clearHeadings}
           className="px-4 py-2 rounded bg-red-500 text-white hover:bg-red-600"
         >
-          Clear Saved Headings
+          Clear Saved
         </button>
       </div>
 
@@ -84,9 +119,10 @@ export default function App() {
               <button
                 key={i}
                 onClick={() => restoreHeading(snap)}
-                className="w-full px-3 py-2 rounded bg-gray-700 text-white hover:bg-gray-600"
+                className="w-full px-3 py-2 rounded text-black"
+                style={{ backgroundColor: snap.color }}
               >
-                {snap.toFixed(1)}°
+                {snap.name} – {snap.value.toFixed(1)}°
               </button>
             ))}
           </div>
