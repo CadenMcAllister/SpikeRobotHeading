@@ -43,7 +43,7 @@ export default function App() {
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-900 text-white">
       <motion.div
         className="w-40 h-40 border-4 border-blue-500 rounded-full flex items-center justify-center text-2xl font-bold"
-        animate={{ rotate: heading }}
+        animate={{ rotate: -heading }}
         transition={{ type: "spring", stiffness: 120, damping: 10 }}
       >
         {Math.round(heading)}°
