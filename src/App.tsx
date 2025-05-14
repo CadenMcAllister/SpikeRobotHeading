@@ -8,7 +8,7 @@ export default function App() {
   const offsetRef = useRef<number>(0);
   const rawAlphaRef = useRef<number>(0);
   const [snapshots, setSnapshots] = useState<number[]>([]);
-
+  console.log("App rendered");
   useEffect(() => {
     const handleOrientation = (e: DeviceOrientationEvent) => {
       if (e.alpha != null) {
