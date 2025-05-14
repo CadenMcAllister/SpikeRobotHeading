@@ -52,11 +52,20 @@ export default function App() {
       <div className="relative w-40 h-40">
         <motion.div
           className="w-40 h-40 border-4 border-blue-500 rounded-full flex items-center justify-center text-2xl font-bold"
-          animate={{ rotate: -heading }}
+          animate={{rotate: -heading }}
           transition={{ type: "spring", stiffness: 120, damping: 10 }}
         >
           {Math.round(heading)}°
         </motion.div>
+
+        {/* Ray pointer */}
+        <motion.div
+          className="absolute w-1 h-24 bg-white top-0 left-0 origin-top"
+          style={{
+            transform: `rotate(${heading}deg)`,
+            transformOrigin: "center center", // Ensures the ray rotates from the center of the circle
+          }}
+        ></motion.div>
 
         {snapshots.map((snap, i) => {
           const angle = (snap * Math.PI) / 180;
