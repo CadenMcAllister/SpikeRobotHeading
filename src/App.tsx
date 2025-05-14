@@ -62,17 +62,8 @@ export default function App() {
         <motion.div
           className="absolute w-1 h-24 bg-white top-0 left-0 origin-top"
           style={{
-<<<<<<< HEAD
-            width: "2px", // Narrow width for the ray
-            height: "100%", // Full height of the circle to reach the edge
-            transformOrigin: "center center", // Make sure it rotates from the center
-            top: 0,
-            left: "50%",
-            transform: `rotate(${heading}deg) translateX(-50%)`,
-=======
             transform: `rotate(${heading}deg)`,
             transformOrigin: "center center", // Ensures the ray rotates from the center of the circle
->>>>>>> parent of 0406957 (Update App.tsx)
           }}
         ></motion.div>
 
