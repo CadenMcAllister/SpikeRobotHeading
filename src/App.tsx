@@ -42,47 +42,43 @@ export default function App() {
     setSnapshots((prev) => [...prev, heading]);
   };
 
-  const restoreHeading = (value: number) => {
-    offsetRef.current = (360 - value) % 360;
+  const setTickAsZero = (tick: number) => {
+    offsetRef.current = (360 - (rawAlphaRef.current - tick)) % 360;
     setHeading(0);
   };
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-900 text-white">
       <div className="relative w-40 h-40">
-        {/* Compass Circle */}
         <motion.div
-          className="absolute top-0 left-0 w-full h-full border-4 border-blue-500 rounded-full flex items-center justify-center text-2xl font-bold"
-          animate={{ rotate: -heading }}
+          className="w-40 h-40 border-4 border-blue-500 rounded-full flex items-center justify-center text-2xl font-bold"
+          animate={{ rotate: heading }}
           transition={{ type: "spring", stiffness: 120, damping: 10 }}
         >
           {Math.round(heading)}°
         </motion.div>
 
-        {/* Tick Marks */}
         {snapshots.map((snap, i) => {
-          const angle = snap;
+          const angle = (snap * Math.PI) / 180;
           const radius = 80;
-          const x = radius * Math.sin((angle * Math.PI) / 180);
-          const y = -radius * Math.cos((angle * Math.PI) / 180);
-          const color = tickColors[i % tickColors.length];
+          const x = radius * Math.cos(angle);
+          const y = radius * Math.sin(angle);
 
           return (
             <div
               key={i}
-              onClick={() => restoreHeading(snap)}
-              className={`absolute w-3 h-3 rounded-full ${color} cursor-pointer`}
+              onClick={() => setTickAsZero(snap)}
+              className={`absolute w-3 h-3 rounded-full cursor-pointer ${tickColors[i % tickColors.length]}`}
               style={{
                 left: `calc(50% + ${x}px - 0.375rem)`,
-                top: `calc(50% + ${y}px - 0.375rem)`,
+                top: `calc(50% - ${y}px - 0.375rem)`,
               }}
-              title={`${Math.round(snap)}°`}
+              title={`Ref: ${Math.round(snap)}°`}
             />
           );
         })}
       </div>
 
-      {/* Buttons */}
       <div className="mt-6 flex gap-4">
         <button
           onClick={resetYaw}
