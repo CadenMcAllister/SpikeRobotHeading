@@ -5,7 +5,7 @@ import './index.css';
 
 export default function App() {
   const [heading, setHeading] = useState<number>(0);
-  const offsetRef = useRef<number>(0);
+  const offsetRef = useRef<number>(0); // Used to adjust for device rotation
   const rawAlphaRef = useRef<number>(0); // Track raw alpha for reset
   const [snapshots, setSnapshots] = useState<number[]>([]);
 
@@ -13,9 +13,8 @@ export default function App() {
     const handleOrientation = (e: DeviceOrientationEvent) => {
       if (e.alpha != null) {
         rawAlphaRef.current = e.alpha;
-        let yaw = (e.alpha + offsetRef.current) % 360;
-        if (yaw > 180) yaw -= 360;
-        if (yaw < -180) yaw += 360;
+        // Adjust yaw to be positive when to the right and negative when to the left
+        let yaw = (e.alpha + offsetRef.current + 180) % 360 - 180; // Ensure yaw is between -180 and 180
         setHeading(yaw);
       }
     };
@@ -36,6 +35,10 @@ export default function App() {
   const restoreHeading = (value: number) => {
     offsetRef.current = (360 - value) % 360;
     setHeading(0);
+  };
+
+  const clearHeadings = () => {
+    setSnapshots([]); // Clear the saved headings
   };
 
   return (
@@ -67,6 +70,12 @@ export default function App() {
           className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700"
         >
           Save Heading
+        </button>
+        <button
+          onClick={clearHeadings}
+          className="px-4 py-2 rounded bg-red-500 text-white hover:bg-red-600"
+        >
+          Clear Saved Headings
         </button>
       </div>
 
