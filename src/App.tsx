@@ -8,6 +8,7 @@ type ResetEntry = {
   offset: number;
   name: string;
   color: string;
+  isDefault?: boolean;
 };
 
 export default function App() {
@@ -27,19 +28,24 @@ export default function App() {
     };
 
     window.addEventListener("deviceorientation", handleOrientation);
-    return () => window.removeEventListener("deviceorientation", handleOrientation);
-  }, []);
 
-  useEffect(() => {
-    const initialOffset = rawAlphaRef.current;
-    const defaultReset: ResetEntry = {
-      offset: initialOffset,
-      name: "Default",
-      color: "hsl(220, 20%, 60%)"
-    };
-    offsetRef.current = initialOffset;
-    setResets([defaultReset]);
-  }, []);
+    // Capture initial yaw after first reading
+    const initialReset = setInterval(() => {
+      if (rawAlphaRef.current !== 0 && resets.length === 0) {
+        const initialEntry: ResetEntry = {
+          offset: rawAlphaRef.current,
+          name: "Default",
+          color: "#cccccc",
+          isDefault: true
+        };
+        offsetRef.current = rawAlphaRef.current;
+        setResets([initialEntry]);
+        clearInterval(initialReset);
+      }
+    }, 100);
+
+    return () => window.removeEventListener("deviceorientation", handleOrientation);
+  }, [resets.length]);
 
   const pastelColor = () => {
     const hue = Math.floor(Math.random() * 360);
@@ -73,6 +79,7 @@ export default function App() {
   };
 
   const deleteReset = (index: number) => {
+    if (resets[index].isDefault) return;
     setResets((prev) => prev.filter((_, i) => i !== index));
   };
 
@@ -101,7 +108,9 @@ export default function App() {
           Reset Yaw
         </button>
         <button
-          onClick={() => setResets(resets.slice(0, 1))}
+          onClick={() =>
+            setResets((prev) => prev.filter((r) => r.isDefault))
+          }
           className="px-4 py-2 rounded bg-red-500 text-white hover:bg-red-600"
         >
           Clear Resets
@@ -126,13 +135,15 @@ export default function App() {
                   {r.name}
                 </button>
                 <div className="flex gap-2 ml-2">
-                  <button onClick={() => renameReset(i)}>
-                    <Pencil size={18} />
-                  </button>
-                  {i !== 0 && (
-                    <button onClick={() => deleteReset(i)}>
-                      <Trash2 size={18} />
-                    </button>
+                  {!r.isDefault && (
+                    <>
+                      <button onClick={() => renameReset(i)}>
+                        <Pencil size={18} />
+                      </button>
+                      <button onClick={() => deleteReset(i)}>
+                        <Trash2 size={18} />
+                      </button>
+                    </>
                   )}
                 </div>
               </div>
