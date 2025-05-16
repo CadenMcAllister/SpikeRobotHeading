@@ -1,5 +1,6 @@
 # 📐 Gyro Heading Tracker
-**Need to fix the Yaw Reference point list** 
+#Need to fix the Yaw Reference point list
+
 A simple browser-based compass that uses your device’s gyroscope to track and display your current heading. Built with React and Framer Motion.
 
 > 🧠 **Originally built for use with LEGO Spike Prime** to assist in directional calibration during robotics development.
