@@ -30,6 +30,17 @@ export default function App() {
     return () => window.removeEventListener("deviceorientation", handleOrientation);
   }, []);
 
+  useEffect(() => {
+    const initialOffset = rawAlphaRef.current;
+    const defaultReset: ResetEntry = {
+      offset: initialOffset,
+      name: "Default",
+      color: "hsl(220, 20%, 60%)"
+    };
+    offsetRef.current = initialOffset;
+    setResets([defaultReset]);
+  }, []);
+
   const pastelColor = () => {
     const hue = Math.floor(Math.random() * 360);
     return `hsl(${hue}, 70%, 80%)`;
@@ -39,7 +50,7 @@ export default function App() {
     const newOffset = rawAlphaRef.current;
     const newReset: ResetEntry = {
       offset: newOffset,
-      name: `Reset ${resets.length + 1}`,
+      name: `Reset ${resets.length}`,
       color: pastelColor()
     };
     offsetRef.current = newOffset;
@@ -90,7 +101,7 @@ export default function App() {
           Reset Yaw
         </button>
         <button
-          onClick={() => setResets([])}
+          onClick={() => setResets(resets.slice(0, 1))}
           className="px-4 py-2 rounded bg-red-500 text-white hover:bg-red-600"
         >
           Clear Resets
@@ -118,9 +129,11 @@ export default function App() {
                   <button onClick={() => renameReset(i)}>
                     <Pencil size={18} />
                   </button>
-                  <button onClick={() => deleteReset(i)}>
-                    <Trash2 size={18} />
-                  </button>
+                  {i !== 0 && (
+                    <button onClick={() => deleteReset(i)}>
+                      <Trash2 size={18} />
+                    </button>
+                  )}
                 </div>
               </div>
             ))}
