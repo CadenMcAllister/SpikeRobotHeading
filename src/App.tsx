@@ -19,12 +19,9 @@ export default function App() {
   useEffect(() => {
     const handleOrientation = (e: DeviceOrientationEvent) => {
       if (e.alpha != null) {
-      if (offsetRef.current === 0 && rawAlphaRef.current === 0) {
-        offsetRef.current = e.alpha;
-      }
-      rawAlphaRef.current = e.alpha;
-      const raw = -e.alpha + offsetRef.current;
-      const yaw = ((raw + 180 + 360) % 360) - 180;
+        rawAlphaRef.current = e.alpha;
+        const raw = -e.alpha + offsetRef.current;
+        const yaw = ((raw + 180 + 360) % 360) - 180;
         setHeading(yaw);
       }
     };
@@ -45,14 +42,14 @@ export default function App() {
       name: `Reset ${resets.length + 1}`,
       color: pastelColor()
     };
-    setResets((prev) => [...prev, newReset]);
     offsetRef.current = newOffset;
     setHeading(0);
+    setResets((prev) => [...prev, newReset]);
   };
 
   const restoreReset = (entry: ResetEntry) => {
     offsetRef.current = entry.offset;
-    setHeading(0);
+    setHeading(((rawAlphaRef.current - entry.offset + 180 + 360) % 360) - 180);
   };
 
   const renameReset = (index: number) => {
